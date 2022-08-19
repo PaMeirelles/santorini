@@ -34,9 +34,12 @@ pub fn print_board(board:&Board){
     println!("Workers: ");
     print_workers(&board.workers);
 }
+
 pub struct Move {
     pub from: i32,
     pub to: i32,
+    // build = -1 -> not set
+    // build = -2 -> winning move
     pub build: i32
 }
 
@@ -58,8 +61,20 @@ pub fn get_square(id:&i32) -> String {
     return str;
 }
 pub fn print_move(mv:&Move){
-    println!("{}({}) -> {}({}) [{}({})]", &mv.from, get_square(&mv.from), &mv.to,
-                     get_square(&mv.to), &mv.build, get_square(&mv.build));
+    if mv.build >= 0{
+        println!("{}({}) -> {}({}) [{}({})]", &mv.from, get_square(&mv.from), &mv.to,
+                 get_square(&mv.to), &mv.build, get_square(&mv.build));
+    }
+    else{
+        if mv.build == -1{
+            println!("{}({}) -> {}({}) NOT SET", &mv.from, get_square(&mv.from), &mv.to,
+                     get_square(&mv.to));
+        }
+        else if mv.build == -2{
+            println!("{}({}) -> {}({}) WON", &mv.from, get_square(&mv.from), &mv.to,
+                     get_square(&mv.to));
+        }
+    }
 }
 
 pub fn make_move(mv:&Move, board: &mut Board){
