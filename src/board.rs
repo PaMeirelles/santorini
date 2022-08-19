@@ -5,10 +5,10 @@ pub struct Board {
     pub workers: [i32; 4]
 }
 
-pub fn new_board() -> Board{
+pub fn new_board(workers:[i32; 4]) -> Board{
     Board {
         blocks: [0; 25],
-        workers: [0; 4],
+        workers
     }
 }
 
@@ -23,6 +23,16 @@ pub fn print_blocks(blocks:[i32;25]){
     }
 }
 
+pub fn print_workers(workers:[i32;4]){
+    println!("[{}, {}], [{}, {}]", workers[0],workers[1], workers[2], workers[3]);
+}
+
+pub fn print_board(board:Board){
+    println!("Blocks: ");
+    print_blocks(board.blocks);
+    println!("Workers: ");
+    print_workers(board.workers);
+}
 pub struct Move {
     pub from: i32,
     pub to: i32,
