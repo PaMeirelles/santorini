@@ -97,3 +97,18 @@ pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<
     }
     return all_moves;
 }
+
+pub fn gen_all_moves(board:&mut Board, turn:&i32, neighbours:&Neighbours) -> Vec<Move> {
+    let mut worker_one: Vec<Move>;
+    let mut worker_two: Vec<Move>;
+    if *turn != 0 {
+        worker_one = gen_move(board, &2, neighbours);
+        worker_two = gen_move(board, &3, neighbours);
+    }
+    else{
+        worker_one = gen_move(board, &0, neighbours);
+        worker_two = gen_move(board, &1, neighbours);
+    }
+    worker_one.append(&mut worker_two);
+    return worker_one
+}
