@@ -1,4 +1,5 @@
 use std::char::from_digit;
+use std::process::exit;
 
 pub struct Board {
     pub blocks: [i32; 25],
@@ -62,11 +63,17 @@ pub fn print_move(mv:&Move){
 }
 
 pub fn make_move(mv:&Move, board: &mut Board){
+    let mut worker_found:bool = false;
     for worker in board.workers.iter_mut(){
         if *worker == mv.from {
             *worker = mv.to;
+            worker_found = true;
             break;
         }
+    }
+    if !worker_found {
+        println!("No worker in 'from' square\n");
+        exit(1);
     }
     board.blocks[mv.build as usize] += 1;
 }
