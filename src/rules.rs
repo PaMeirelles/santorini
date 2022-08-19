@@ -1,5 +1,5 @@
-use crate::board;
-use crate::board::Move;
+use crate::{board, make_move, print_board, print_move};
+use crate::board::{inverse_move, Move};
 use crate::board::Board;
 use crate::board::new_move;
 
@@ -53,17 +53,47 @@ pub fn square_is_free(square:&i32, board:&Board) -> bool{
     return true;
 }
 
-pub fn half_move(board:&Board, worker:&usize, neighbours:Neighbours) -> Vec<Move>{
+pub fn half_move(board:&Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
     let mut moves:Vec<Move> = vec![];
 
     for neighbour in &neighbours.neighbours[board.workers[*worker]as usize]{
-        if square_is_free(neighbour, board) && board.blocks[*neighbour as usize] - board.blocks[board.workers[*worker] as usize] <= 1{
+        if square_is_free(&neighbour, board) && board.blocks[*neighbour as usize] - board.blocks[board.workers[*worker] as usize] <= 1{
             if board.blocks[*neighbour as usize] == 3{
-                moves.push(new_move(board.workers[*worker], *neighbour, -2));
+                moves.push(new_move(&board.workers[*worker], neighbour, &-2));
             }
-            else{moves.push(new_move(board.workers[*worker], *neighbour, -1));
+            else{moves.push(new_move(&board.workers[*worker], neighbour, &-1));
             }
         }
     }
     return moves;
+}
+
+pub fn build_move(board:&Board, square:&i32, neighbours:&Neighbours) -> Vec<Move>{
+    let mut moves:Vec<Move> = vec![];
+
+    for neighbour in &neighbours.neighbours[*square as usize]{
+        if square_is_free(neighbour, board){
+            moves.push(new_move(&-1, square, neighbour))
+        }
+    }
+    return moves;
+}
+
+pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
+    let mut all_moves: Vec<Move> = vec![];
+    let half_moves: Vec<Move> = half_move(board, worker, neighbours);
+
+    for hm in half_moves{
+        if hm.build == -2{
+            all_moves.push(hm);
+        }
+        else{
+            make_move(&hm, board);
+            for bm in &build_move(board, &hm.to, neighbours){
+                all_moves.push(new_move(&hm.from, &hm.to, &bm.build))
+            }
+            make_move(&inverse_move(&hm), board);
+        }
+    }
+    return all_moves;
 }

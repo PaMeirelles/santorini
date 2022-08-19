@@ -1,4 +1,3 @@
-use std::char::from_digit;
 use std::process::exit;
 
 pub struct Board {
@@ -43,11 +42,11 @@ pub struct Move {
     pub build: i32
 }
 
-pub fn new_move(from:i32, to:i32, build:i32) -> Move{
+pub fn new_move(from:&i32, to:&i32, build:&i32) -> Move{
     Move{
-        from,
-        to,
-        build,
+        from:*from,
+        to:*to,
+        build:*build,
     }
 }
 pub fn get_square(id:&i32) -> String {
@@ -90,5 +89,10 @@ pub fn make_move(mv:&Move, board: &mut Board){
         println!("No worker in 'from' square\n");
         exit(1);
     }
-    board.blocks[mv.build as usize] += 1;
+    if mv.build >= 0 {
+        board.blocks[mv.build as usize] += 1;
+    }
+}
+pub fn inverse_move(mv: &Move) -> Move{
+    return new_move(&mv.to, &mv.from, &mv.build);
 }
