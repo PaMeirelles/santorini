@@ -1,8 +1,7 @@
-use crate::board::new_board;
-
 mod board;
 
 fn main() {
-    let b1: board::Board = new_board();
+    let m1: board::Move = board::new_move(12, 13, 14);
+    board::print_move(m1);
     println!("Hello, world!");
 }
