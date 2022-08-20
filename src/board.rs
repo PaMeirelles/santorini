@@ -34,6 +34,7 @@ pub fn print_board(board:&Board){
     print_workers(&board.workers);
 }
 
+#[derive(Clone, Copy)]
 pub struct Move {
     pub from: i32,
     pub to: i32,
@@ -91,6 +92,15 @@ pub fn make_move(mv:&Move, board: &mut Board){
     }
     if mv.build >= 0 {
         board.blocks[mv.build as usize] += 1;
+    }
+}
+
+pub fn undo_move(mv:&Move, board: &mut Board){
+    let inv:Move = inverse_move(mv);
+    make_move(&inv, board);
+    if mv.build >=0{
+        board.blocks[mv.build as usize] -= 2;
+
     }
 }
 pub fn inverse_move(mv: &Move) -> Move{

@@ -101,7 +101,7 @@ pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<
 pub fn gen_all_moves(board:&mut Board, turn:&i32, neighbours:&Neighbours) -> Vec<Move> {
     let mut worker_one: Vec<Move>;
     let mut worker_two: Vec<Move>;
-    if *turn != 0 {
+    if *turn == -1 {
         worker_one = gen_move(board, &2, neighbours);
         worker_two = gen_move(board, &3, neighbours);
     }
