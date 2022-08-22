@@ -31,14 +31,16 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
     if depth == 0{
         return eval(b, n) * color as f64;
     }
-    let mut value:f64 = -f64::INFINITY;
+    let mut value:f64 = -10000.0;
     let mut result:f64;
     let moves:Vec<Move> = gen_all_moves(b, &color, n);
-
+    if moves.len() == 0{
+        return (10000.0 + depth as f64) * -color as f64;
+    }
     for mv in moves{
         //print_move(&mv);
         if mv.build == -2{
-            return f64::INFINITY * color as f64;
+            return (10000.0 + depth as f64) * color as f64;
         }
         make_move(&mv, b);
         result = -negamax(b, depth-1, -color, &n, eval);
@@ -70,6 +72,6 @@ pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(
             best_score_id = i;
         }
     }
-    //println!("{}", best_score);
+    println!("{}", best_score);
     return mvs[best_score_id];
 }
