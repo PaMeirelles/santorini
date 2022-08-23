@@ -1,5 +1,5 @@
 use crate::{board, make_move, print_board, print_move};
-use crate::board::{inverse_move, Move};
+use crate::board::{inverse_move, Move, undo_move};
 use crate::board::Board;
 use crate::board::new_move;
 
@@ -92,7 +92,7 @@ pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<
             for bm in &build_move(board, &hm.to, neighbours){
                 all_moves.push(new_move(&hm.from, &hm.to, &bm.build))
             }
-            make_move(&inverse_move(&hm), board);
+            undo_move(&hm, board);
         }
     }
     return all_moves;

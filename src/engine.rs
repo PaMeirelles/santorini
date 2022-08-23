@@ -26,8 +26,20 @@ pub fn neighbour_high(b:&Board, n:&Neighbours) -> f64{
     let p2 = wh3 + wh4 + wn3 + wn4;
     return p1 - p2;
 }
-
-pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64) -> f64{
+pub fn game_is_over(b: &Board) -> f64{
+    if b.blocks[b.workers[0] as usize] == 3|| b.blocks[b.workers[1] as usize] == 3{
+        return 10000.0;
+    }
+    if b.blocks[b.workers[2] as usize] == 3|| b.blocks[b.workers[3] as usize] == 3{
+        return -10000.0;
+    }
+    return 0.0;
+}
+pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, beta:f64) -> f64{
+    let game_over:f64 = game_is_over(b);
+    if game_over != 0.0{
+        return game_over * color as f64;
+    }
     if depth == 0{
         return eval(b, n) * color as f64;
     }
@@ -38,27 +50,36 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
         return (10000.0 + depth as f64) * -color as f64;
     }
     for mv in moves{
-        //print_move(&mv);
-        if mv.build == -2{
-            return (10000.0 + depth as f64) * color as f64;
-        }
         make_move(&mv, b);
-        result = -negamax(b, depth-1, -color, &n, eval);
+        result = -negamax(b, depth-1, -color, &n, eval, -beta, -alpha);
+        undo_move(&mv, b);
         if result > value {
             value = result;
         }
-        undo_move(&mv, b);
+        if value > alpha{
+            alpha = value;
+        }
+        if alpha >= beta{
+            break;
+        }
     }
     return value;
 }
 
 pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64) -> Move {
     let mvs:Vec<Move> = gen_all_moves(b, &color, n);
+    /*
+    println!("---------------------------------\n");
+    for mv in &mvs{
+        print_move(mv);
+    }
+    println!("---------------------------------\n");
+    */
     let mut scores:Vec<f64> = vec!();
 
     for mv in &mvs{
         make_move(mv, b);
-        scores.push(-negamax(b, depth -1, -color, n, eval));
+        scores.push(-negamax(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64));
         undo_move(mv, b);
     }
 
@@ -72,6 +93,6 @@ pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(
             best_score_id = i;
         }
     }
-    println!("{}", best_score);
+    println!("{}", best_score * color as f64);
     return mvs[best_score_id];
 }

@@ -16,7 +16,7 @@ fn main() {
 
     // Code block to measure.
     {
-        let mut b1:Board = new_board([8, 11, 12, 16]);
+        let mut b1:Board = new_board([6, 18, 0, 24]);
         let n:Neighbours = init_neighbours();
         play_game(neighbour_high, neighbour_high, &mut b1, &n);
     }

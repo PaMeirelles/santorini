@@ -9,9 +9,9 @@ pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:
 
     loop {
         if color == 1 {
-            best = get_best_move(b1, 4, 1, n, eval1)
+            best = get_best_move(b1, 5, 1, n, eval1)
         } else {
-            best = get_best_move(b1, 4, -1, n, eval2)
+            best = get_best_move(b1, 5, -1, n, eval2)
         }
         print_move(&best);
         make_move(&best, b1);

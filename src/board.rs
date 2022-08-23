@@ -87,7 +87,7 @@ pub fn make_move(mv:&Move, board: &mut Board){
         }
     }
     if !worker_found {
-        println!("No worker in 'from' square\n");
+        println!("No worker in 'from' square");
         exit(1);
     }
     if mv.build >= 0 {
