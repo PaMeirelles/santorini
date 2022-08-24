@@ -7,6 +7,11 @@ use crate::rules::gen_all_moves;
 use rand::prelude::*;
 use crate::{make_move, print_board, print_move};
 
+pub struct Node {
+    pub board: Board,
+    pub flag: char,
+}
+
 pub fn random_eval(b: &Board, n:&Neighbours) -> f64{
     return rand::random();
 }
@@ -38,8 +43,16 @@ pub fn game_is_over(b: &Board) -> f64{
 pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, beta:f64) -> f64{
     let game_over:f64 = game_is_over(b);
     if game_over != 0.0{
-        return game_over * color as f64;
+        let db;
+        if game_over > 0.0{
+            db = depth;
+        }
+        else{
+            db = -depth;
+        }
+        return ((game_over + db as f64) as f64) * color as f64;
     }
+
     if depth == 0{
         return eval(b, n) * color as f64;
     }
