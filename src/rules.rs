@@ -41,7 +41,7 @@ pub fn init_neighbours() -> Neighbours{
             ]
     }
 }
-pub fn square_is_free(square:&i32, board:&Board) -> bool{
+pub fn square_is_free(square:&i32, board:Board) -> bool{
     for worker in board.workers{
         if worker == *square{
             return false;
@@ -53,7 +53,7 @@ pub fn square_is_free(square:&i32, board:&Board) -> bool{
     return true;
 }
 
-pub fn half_move(board:&Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
+pub fn half_move(board:Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
     let mut moves:Vec<Move> = vec![];
 
     for neighbour in &neighbours.neighbours[board.workers[*worker]as usize]{
@@ -68,7 +68,7 @@ pub fn half_move(board:&Board, worker:&usize, neighbours:&Neighbours) -> Vec<Mov
     return moves;
 }
 
-pub fn build_move(board:&Board, square:&i32, neighbours:&Neighbours) -> Vec<Move>{
+pub fn build_move(board:Board, square:&i32, neighbours:&Neighbours) -> Vec<Move>{
     let mut moves:Vec<Move> = vec![];
 
     for neighbour in &neighbours.neighbours[*square as usize]{
@@ -79,8 +79,9 @@ pub fn build_move(board:&Board, square:&i32, neighbours:&Neighbours) -> Vec<Move
     return moves;
 }
 
-pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
+pub fn gen_move(mut board:Board, worker:&usize, neighbours:&Neighbours) -> Vec<Move>{
     let mut all_moves: Vec<Move> = vec![];
+
     let half_moves: Vec<Move> = half_move(board, worker, neighbours);
 
     for hm in half_moves{
@@ -88,19 +89,20 @@ pub fn gen_move(board:&mut Board, worker:&usize, neighbours:&Neighbours) -> Vec<
             all_moves.push(hm);
         }
         else{
-            make_move(&hm, board);
+            make_move(&hm, &mut board);
             for bm in &build_move(board, &hm.to, neighbours){
                 all_moves.push(new_move(&hm.from, &hm.to, &bm.build))
             }
-            undo_move(&hm, board);
+            undo_move(&hm, &mut board);
         }
     }
     return all_moves;
 }
 
-pub fn gen_all_moves(board:&mut Board, turn:&i32, neighbours:&Neighbours) -> Vec<Move> {
+pub fn gen_all_moves(board:Board, turn:&i32, neighbours:&Neighbours) -> Vec<Move> {
     let mut worker_one: Vec<Move>;
     let mut worker_two: Vec<Move>;
+
     if *turn == -1 {
         worker_one = gen_move(board, &2, neighbours);
         worker_two = gen_move(board, &3, neighbours);

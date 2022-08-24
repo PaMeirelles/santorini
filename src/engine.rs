@@ -10,10 +10,12 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-#[derive(Hash, Eq, PartialEq, Debug)]
-pub struct Node<'a> {
-    pub board: &'a Board,
+#[derive(Hash, Eq, PartialEq, Debug, Copy, Clone)]
+pub struct Node {
+    pub board: Board,
     pub flag: char,
+    pub depth: i32,
+    pub value: u64
 }
 
 pub fn random_eval(b: &Board, n:&Neighbours) -> f64{
@@ -44,23 +46,42 @@ pub fn game_is_over(b: &Board) -> f64{
     }
     return 0.0;
 }
-pub fn calculate_hash<T: Hash>(t: &T) -> u64 {
-    let mut s = DefaultHasher::new();
-    t.hash(&mut s);
-    s.finish()
-}
-pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, beta:f64, tt:&HashMap<u64, Node>) -> f64{
+
+pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, mut beta:f64, tt: &mut HashMap<Board, Node>) -> f64{
     let alpha_orig = alpha;
-    let nd:Node = Node{
+    let mut found = true;
+    let mut nd:Node = Node{
         board: b,
-        flag: ' '
+        flag: ' ',
+        depth:0,
+        value:0
     };
-    match tt.get(&calculate_hash(b)) {
-        Some(review) => println!("a"),
-        _ => {}
+    match tt.get(&b) {
+        Some(node) => nd = *node,
+        None => {found = false}
     }
 
-    let game_over:f64 = game_is_over(b);
+    if found && nd.depth >= depth{
+        if nd.flag == 'e'{
+            return nd.value as f64;
+        }
+        else if nd.flag == 'l'{
+            if nd.value as f64> alpha{
+                alpha = nd.value as f64;
+            }
+        }
+        else if nd.flag == 'u'{
+            if (nd.value as f64) < beta {
+                beta = nd.value as f64;
+            }
+        }
+
+        if alpha >= beta{
+            return nd.value as f64;
+        }
+    }
+
+    let game_over:f64 = game_is_over(&b);
     if game_over != 0.0{
         let db;
         if game_over > 0.0{
@@ -73,7 +94,7 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
     }
 
     if depth == 0{
-        return eval(b, n) * color as f64;
+        return eval(&b, n) * color as f64;
     }
     let mut value:f64 = -10000.0;
     let mut result:f64;
@@ -82,9 +103,9 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
         return (10000.0 + depth as f64) * -color as f64;
     }
     for mv in moves{
-        make_move(&mv, b);
+        make_move(&mv, &mut b);
         result = -negamax(b, depth-1, -color, &n, eval, -beta, -alpha, tt);
-        undo_move(&mv, b);
+        undo_move(&mv, &mut b);
         if result > value {
             value = result;
         }
@@ -95,17 +116,31 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
             break;
         }
     }
+
+    nd.value = value as u64;
+    if value <= alpha_orig{
+        nd.flag = 'u';
+    }
+    else if value >= beta{
+        nd.flag = 'l';
+    }
+    else{
+        nd.flag = 'e';
+    }
+    nd.depth = depth;
+    (*tt).insert(b, nd);
+
     return value;
 }
 
-pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, tt:&HashMap<u64, Node>) -> Move {
+pub fn get_best_move(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, tt:&mut HashMap<Board, Node>) -> Move {
     let mvs:Vec<Move> = gen_all_moves(b, &color, n);
     let mut scores:Vec<f64> = vec!();
 
     for mv in &mvs{
-        make_move(mv, b);
+        make_move(mv, &mut b);
         scores.push(-negamax(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64, tt));
-        undo_move(mv, b);
+        undo_move(mv, &mut b);
     }
 
     let mut best_score:f64 = scores[0];

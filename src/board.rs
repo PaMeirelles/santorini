@@ -1,11 +1,18 @@
+use std::ops::Deref;
 use std::process::exit;
 
-#[derive(Hash, Eq, PartialEq, Debug)]
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
 pub struct Board {
     pub blocks: [i32; 25],
     pub workers: [i32; 4]
 }
+impl Deref for Board {
+    type Target = Board;
 
+    fn deref(&self) -> &Self::Target {
+        &self
+    }
+}
 pub fn new_board(workers:[i32; 4]) -> Board{
     Board {
         blocks: [0; 25],
@@ -35,7 +42,7 @@ pub fn print_board(board:&Board){
     print_workers(&board.workers);
 }
 
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone)]
 pub struct Move {
     pub from: i32,
     pub to: i32,
@@ -78,7 +85,7 @@ pub fn print_move(mv:&Move){
     }
 }
 
-pub fn make_move(mv:&Move, board: &mut Board){
+pub fn make_move(mv:&Move, mut board: &mut Board){
     let mut worker_found:bool = false;
     for worker in board.workers.iter_mut(){
         if *worker == mv.from {
@@ -96,7 +103,7 @@ pub fn make_move(mv:&Move, board: &mut Board){
     }
 }
 
-pub fn undo_move(mv:&Move, board: &mut Board){
+pub fn undo_move(mv:&Move, mut board: &mut Board){
     let inv:Move = inverse_move(mv);
     make_move(&inv, board);
     if mv.build >=0{
