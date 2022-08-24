@@ -1,5 +1,6 @@
 use std::process::exit;
 
+#[derive(Hash, Eq, PartialEq, Debug)]
 pub struct Board {
     pub blocks: [i32; 25],
     pub workers: [i32; 4]

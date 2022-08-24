@@ -6,9 +6,13 @@ use f64;
 use crate::rules::gen_all_moves;
 use rand::prelude::*;
 use crate::{make_move, print_board, print_move};
+use std::collections::HashMap;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
-pub struct Node {
-    pub board: Board,
+#[derive(Hash, Eq, PartialEq, Debug)]
+pub struct Node<'a> {
+    pub board: &'a Board,
     pub flag: char,
 }
 
@@ -40,7 +44,22 @@ pub fn game_is_over(b: &Board) -> f64{
     }
     return 0.0;
 }
-pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, beta:f64) -> f64{
+pub fn calculate_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
+}
+pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, beta:f64, tt:&HashMap<u64, Node>) -> f64{
+    let alpha_orig = alpha;
+    let nd:Node = Node{
+        board: b,
+        flag: ' '
+    };
+    match tt.get(&calculate_hash(b)) {
+        Some(review) => println!("a"),
+        _ => {}
+    }
+
     let game_over:f64 = game_is_over(b);
     if game_over != 0.0{
         let db;
@@ -64,7 +83,7 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
     }
     for mv in moves{
         make_move(&mv, b);
-        result = -negamax(b, depth-1, -color, &n, eval, -beta, -alpha);
+        result = -negamax(b, depth-1, -color, &n, eval, -beta, -alpha, tt);
         undo_move(&mv, b);
         if result > value {
             value = result;
@@ -79,20 +98,13 @@ pub fn negamax(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:
     return value;
 }
 
-pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64) -> Move {
+pub fn get_best_move(b:&mut Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, tt:&HashMap<u64, Node>) -> Move {
     let mvs:Vec<Move> = gen_all_moves(b, &color, n);
-    /*
-    println!("---------------------------------\n");
-    for mv in &mvs{
-        print_move(mv);
-    }
-    println!("---------------------------------\n");
-    */
     let mut scores:Vec<f64> = vec!();
 
     for mv in &mvs{
         make_move(mv, b);
-        scores.push(-negamax(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64));
+        scores.push(-negamax(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64, tt));
         undo_move(mv, b);
     }
 
