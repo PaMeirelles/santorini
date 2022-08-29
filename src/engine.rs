@@ -47,40 +47,7 @@ pub fn game_is_over(b: &Board) -> f64{
     return 0.0;
 }
 
-pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, mut beta:f64, tt: &mut HashMap<Board, Node>) -> f64{
-    let alpha_orig = alpha;
-    let mut found = true;
-    let mut nd:Node = Node{
-        board: b,
-        flag: ' ',
-        depth:0,
-        value:0
-    };
-    match tt.get(&b) {
-        Some(node) => nd = *node,
-        None => {found = false}
-    }
-
-    if found && nd.depth >= depth{
-        if nd.flag == 'e'{
-            return nd.value as f64;
-        }
-        else if nd.flag == 'l'{
-            if nd.value as f64> alpha{
-                alpha = nd.value as f64;
-            }
-        }
-        else if nd.flag == 'u'{
-            if (nd.value as f64) < beta {
-                beta = nd.value as f64;
-            }
-        }
-
-        if alpha >= beta{
-            return nd.value as f64;
-        }
-    }
-
+pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, mut beta:f64) -> f64{
     let game_over:f64 = game_is_over(&b);
     if game_over != 0.0{
         let db;
@@ -104,7 +71,7 @@ pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&
     }
     for mv in moves{
         make_move(&mv, &mut b);
-        result = -negamax(b, depth-1, -color, &n, eval, -beta, -alpha, tt);
+        result = -alpha_beta(b, depth-1, -color, &n, eval, -beta, -alpha);
         undo_move(&mv, &mut b);
         if result > value {
             value = result;
@@ -116,20 +83,6 @@ pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&
             break;
         }
     }
-
-    nd.value = value as u64;
-    if value <= alpha_orig{
-        nd.flag = 'u';
-    }
-    else if value >= beta{
-        nd.flag = 'l';
-    }
-    else{
-        nd.flag = 'e';
-    }
-    nd.depth = depth;
-    (*tt).insert(b, nd);
-
     return value;
 }
 
@@ -139,20 +92,17 @@ pub fn get_best_move(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(b
 
     for mv in &mvs{
         make_move(mv, &mut b);
-        scores.push(-negamax(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64, tt));
+        scores.push(-alpha_beta(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64));
         undo_move(mv, &mut b);
     }
 
     let mut best_score:f64 = scores[0];
     let mut best_score_id:usize = 0;
     for (i, score) in scores.iter().enumerate(){
-        //print!("{} ", score);
-        //print_move(&mvs[i]);
         if *score > best_score{
             best_score= *score;
             best_score_id = i;
         }
     }
-    println!("{}", best_score * color as f64);
     return mvs[best_score_id];
 }

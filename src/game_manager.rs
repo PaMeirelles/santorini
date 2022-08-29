@@ -10,12 +10,12 @@ pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:
     let mut tt:HashMap<Board, Node> = HashMap::new();
     let mut best:Move = new_move(&-1, &0, &-1);
     let mut color:i32 = 1;
-
-    loop {
+    loop{
         if color == 1 {
-            best = get_best_move(b1, 5, 1, n, eval1, &mut tt)
+
+            best = get_best_move(b1, 2, 1, n, eval1, &mut tt)
         } else {
-            best = get_best_move(b1, 5, -1, n, eval2, &mut tt)
+            best = get_best_move(b1, 2, -1, n, eval2, &mut tt)
         }
         print_move(&best);
         make_move(&best, &mut b1);
