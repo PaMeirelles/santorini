@@ -137,7 +137,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     }
 
     match time_s {
-        "standart" => {time = remaining_time / 30},
+        "standart" => {time = remaining_time / 20},
         _ => {}
     }
 
@@ -170,6 +170,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
+        println!("Finished search with depth {}. Total time: {:.2?}. Score: {} Best move:", depth, now.elapsed(), best_score * color as f64);
+        print_move(&best);
         depth += 1;
     }
 
