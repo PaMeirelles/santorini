@@ -1,0 +1,12 @@
+/home/runner/santorini/target/debug/deps/andrew-1ae2396da35c321a.rmeta: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/lib.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/line.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/rectangle.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/fontconfig.rs
+
+/home/runner/santorini/target/debug/deps/libandrew-1ae2396da35c321a.rlib: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/lib.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/line.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/rectangle.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/fontconfig.rs
+
+/home/runner/santorini/target/debug/deps/andrew-1ae2396da35c321a.d: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/lib.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/line.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/rectangle.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/fontconfig.rs
+
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/lib.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/line.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/mod.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/shapes/rectangle.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/mod.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/andrew-0.3.1/src/text/fontconfig.rs:
