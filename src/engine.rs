@@ -10,6 +10,9 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
+use std::time::Instant;
+use std::time::Duration;
+
 #[derive(Hash, Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Node {
     pub board: Board,
@@ -46,7 +49,39 @@ pub fn game_is_over(b: &Board) -> f64{
     }
     return 0.0;
 }
+pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64) -> f64{
+    let game_over:f64 = game_is_over(&b);
+    if game_over != 0.0{
+        let db;
+        if game_over > 0.0{
+            db = depth;
+        }
+        else{
+            db = -depth;
+        }
+        return ((game_over + db as f64) as f64) * color as f64;
+    }
 
+    if depth == 0{
+        return eval(&b, n) * color as f64;
+    }
+
+    let mut value:f64 = -10000.0;
+    let mut result:f64;
+    let moves:Vec<Move> = gen_all_moves(b, &color, n);
+    if moves.len() == 0{
+        return (10000.0 + depth as f64) * -color as f64;
+    }
+    for mv in moves{
+        make_move(&mv, &mut b);
+        result = -negamax(b, depth-1, -color, &n, eval);
+        undo_move(&mv, &mut b);
+        if result > value {
+            value = result;
+        }
+    }
+    return value;
+}
 pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, mut beta:f64) -> f64{
     let game_over:f64 = game_is_over(&b);
     if game_over != 0.0{
@@ -86,23 +121,57 @@ pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(boar
     return value;
 }
 
-pub fn get_best_move(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, tt:&mut HashMap<Board, Node>) -> Move {
-    let mvs:Vec<Move> = gen_all_moves(b, &color, n);
-    let mut scores:Vec<f64> = vec!();
-
-    for mv in &mvs{
-        make_move(mv, &mut b);
-        scores.push(-alpha_beta(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64));
-        undo_move(mv, &mut b);
+pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_s:&str, time_s:&str, remaining_time:Duration) -> Move {
+    let now = Instant::now();
+    let mut eval:fn(&Board, &Neighbours) -> f64 = neighbour_high;
+    let mut time:Duration = Duration::new(1,0);
+    let mut best:Move = Move {
+        from: 0,
+        to: 0,
+        build: 0
+    };
+    let mut depth:i32 = 1;
+    match eval_s {
+        "nh" => eval = neighbour_high,
+        _ => {}
     }
 
-    let mut best_score:f64 = scores[0];
-    let mut best_score_id:usize = 0;
-    for (i, score) in scores.iter().enumerate(){
-        if *score > best_score{
-            best_score= *score;
-            best_score_id = i;
+    match time_s {
+        "standart" => {time = remaining_time / 30},
+        _ => {}
+    }
+
+    loop{
+        if now.elapsed() > time{
+            break;
         }
+        let mvs:Vec<Move> = gen_all_moves(b, &color, n);
+        let mut scores:Vec<f64> = vec!();
+
+        for mv in &mvs{
+            if now.elapsed() > time{
+                break;
+            }
+            make_move(mv, &mut b);
+            match search_s {
+                "negamax" => scores.push(-negamax(b, depth -1, -color, n, eval)),
+                "alpha_beta" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64)),
+                _ => {}
+            }
+            undo_move(mv, &mut b);
+        }
+
+        let mut best_score:f64 = scores[0];
+        let mut best_score_id:usize = 0;
+        for (i, score) in scores.iter().enumerate(){
+            if *score > best_score{
+                best_score= *score;
+                best_score_id = i;
+            }
+        }
+        best = mvs[best_score_id];
+        depth += 1;
     }
-    return mvs[best_score_id];
+
+    return best;
 }
