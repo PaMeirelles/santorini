@@ -3,6 +3,13 @@ use crate::rules::{Neighbours, init_neighbours};
 use crate::engine::{get_best_move, Node};
 use crate::{gen_all_moves, make_move, print_board, print_move};
 use std::time::{Duration, Instant};
+use f64;
+
+pub fn elo_gain(elo_a:f64, elo_b:f64, result:f64) -> f64{
+  let k = 2.0;
+  let expected:f64 = 1.0 / (1.0 + f64::powf(10.0, ((elo_b - elo_a) / 400.0)));
+  return k * (result - expected);
+}
 
 pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:&Board, nei:&Neighbours) -> f64){
     let mut b1:Board = new_board([12, 13, 7, 17]);
