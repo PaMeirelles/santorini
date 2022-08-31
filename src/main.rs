@@ -7,7 +7,7 @@ mod visual;
 mod engine;
 
 mod game_manager;
-use crate::engine::{alpha_beta, random_eval, neighbour_high, get_best_move, Node};
+use crate::engine::{alpha_beta, neighbour_high, get_best_move, Node};
 use crate::game_manager::play_game;
 
 fn main() {

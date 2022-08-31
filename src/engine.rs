@@ -4,11 +4,7 @@ use crate::board::Move;
 use crate::rules::Neighbours;
 use f64;
 use crate::rules::gen_all_moves;
-use rand::prelude::*;
 use crate::{make_move, print_board, print_move};
-use std::collections::HashMap;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 use std::time::Instant;
 use std::time::Duration;
@@ -19,10 +15,6 @@ pub struct Node {
     pub flag: char,
     pub depth: i32,
     pub value: u64
-}
-
-pub fn random_eval(b: &Board, n:&Neighbours) -> f64{
-    return rand::random();
 }
 
 pub fn neighbour_high(b:&Board, n:&Neighbours) -> f64{
