@@ -10,8 +10,8 @@ pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:
     let n:&Neighbours = &init_neighbours();
     let mut best:Move = new_move(&-1, &0, &-1);
     let mut color:i32 = 1;
-    let mut time_a = Duration::new(30 * 60, 0);
-    let mut time_b = Duration::new(30 * 60, 0);
+    let mut time_a = Duration::new(5 * 60, 0);
+    let mut time_b = Duration::new(5 * 60, 0);
     let mut now = Instant::now();
     let mut zero = Duration::new(0, 0);
     loop{

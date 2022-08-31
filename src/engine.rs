@@ -125,6 +125,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     let now = Instant::now();
     let mut eval:fn(&Board, &Neighbours) -> f64 = neighbour_high;
     let mut time:Duration = Duration::new(1,0);
+    let mut n_moves;
+    let mut c_moves;
     let mut best:Move = Move {
         from: 0,
         to: 0,
@@ -146,9 +148,12 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             break;
         }
         let mvs:Vec<Move> = gen_all_moves(b, &color, n);
+        n_moves = mvs.len();
         let mut scores:Vec<f64> = vec!();
-
+        c_moves = 0;
+      
         for mv in &mvs{
+            c_moves += 1;
             if now.elapsed() > time{
                 break;
             }
@@ -170,7 +175,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
-        println!("Finished search with depth {}. Total time: {:.2?}. Score: {} Best move:", depth, now.elapsed(), best_score * color as f64);
+        println!("Depth {} {}/{}. Total time: {:.2?}. Score: {} Best move:", depth, c_moves, n_moves, now.elapsed(), best_score * color as f64);
         print_move(&best);
         depth += 1;
     }
