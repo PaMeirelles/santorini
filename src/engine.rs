@@ -137,7 +137,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     }
 
     match time_s {
-        "standart" => {time = remaining_time / 20},
+        "standart" => {time = remaining_time / 15},
         _ => {}
     }
 
