@@ -3,6 +3,18 @@ use crate::rules::{Neighbours, init_neighbours};
 use crate::engine::{get_best_move, Node};
 use crate::{gen_all_moves, make_move, print_board, print_move};
 use std::time::{Duration, Instant};
+use std::fs;
+
+pub fn get_counter() -> i32{
+    let data = fs::read_to_string("data/counter.dat").expect("Unable to read file");
+    return data.parse::<i32>().unwrap();
+}
+
+pub fn update_counter(){
+    let mut counter:i32 = get_counter();
+    counter += 1;
+    fs::write("data/counter.dat", counter.to_string()).expect("Unable to write file");
+}
 
 pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:&Board, nei:&Neighbours) -> f64){
     let mut b1:Board = new_board([12, 13, 7, 17]);

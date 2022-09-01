@@ -8,9 +8,13 @@ mod engine;
 
 mod game_manager;
 use crate::engine::{alpha_beta, neighbour_high, get_best_move, Node};
-use crate::game_manager::play_game;
+use crate::game_manager::{play_game, get_counter, update_counter};
 
 fn main() {
+    println!("{}\n",get_counter());
+    update_counter();
+    println!("{}\n",get_counter());
+    /*
     use std::time::Instant;
     let now = Instant::now();
     {
@@ -19,5 +23,7 @@ fn main() {
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
+
+     */
 
 }
