@@ -4,9 +4,17 @@ use crate::engine::{get_best_move, Node};
 use crate::{gen_all_moves, make_move, print_board, print_move};
 use std::time::{Duration, Instant};
 use std::fs;
-use csv::Writer;
 
-
+use std::fs::File;
+use std::io::Write;
+pub fn register_game(id:i32, elo_a:f64, elo_b:f64, starting_pos:i32, result:bool, time_control:&str) -> std::io::Result<()> {
+    let mut file = fs::OpenOptions::new()
+        .write(true)
+        .append(true) // This is needed to append to file
+        .open("data/matches.csv")
+        .unwrap();
+    write!(file, "a,b,c,d,e\n")
+}
 
 pub fn get_counter() -> i32{
     let data = fs::read_to_string("data/counter.dat").expect("Unable to read file");
