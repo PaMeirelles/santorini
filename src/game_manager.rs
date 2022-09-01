@@ -7,13 +7,13 @@ use std::fs;
 
 use std::fs::File;
 use std::io::Write;
-pub fn register_game(id:i32, elo_a:f64, elo_b:f64, starting_pos:i32, result:bool, time_control:&str) -> std::io::Result<()> {
+pub fn register_game(id:i32, name_a:&str, name_b:&str, elo_a:f64, elo_b:f64, starting_pos:i32, result:bool, time_control:&str) -> std::io::Result<()> {
     let mut file = fs::OpenOptions::new()
         .write(true)
         .append(true) // This is needed to append to file
         .open("data/matches.csv")
         .unwrap();
-    write!(file, "a,b,c,d,e\n")
+    write!(file, "{},{},{},{},{},{},{},{}\n", id.to_string(), name_a, name_b, elo_a.to_string(), elo_b.to_string(), starting_pos.to_string(), result.to_string(), time_control)
 }
 
 pub fn get_counter() -> i32{
@@ -27,7 +27,7 @@ pub fn update_counter(){
     fs::write("data/counter.dat", counter.to_string()).expect("Unable to write file");
 }
 
-pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> f64, eval2:fn(board:&Board, nei:&Neighbours) -> f64){
+pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> i32, eval2:fn(board:&Board, nei:&Neighbours) -> i32){
     let mut b1:Board = new_board([12, 13, 7, 17]);
     let n:&Neighbours = &init_neighbours();
     let mut best:Move = new_move(&-1, &0, &-1);
