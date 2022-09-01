@@ -4,6 +4,9 @@ use crate::engine::{get_best_move, Node};
 use crate::{gen_all_moves, make_move, print_board, print_move};
 use std::time::{Duration, Instant};
 use std::fs;
+use csv::Writer;
+
+
 
 pub fn get_counter() -> i32{
     let data = fs::read_to_string("data/counter.dat").expect("Unable to read file");
