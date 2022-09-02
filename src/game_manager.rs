@@ -27,7 +27,7 @@ pub fn update_counter(){
     fs::write("data/counter.dat", counter.to_string()).expect("Unable to write file");
 }
 
-pub fn play_game(eval1:fn(board:&Board, nei:&Neighbours) -> i32, eval2:fn(board:&Board, nei:&Neighbours) -> i32){
+pub fn play_game(){
     let mut b1:Board = new_board([12, 13, 7, 17]);
     let n:&Neighbours = &init_neighbours();
     let mut best:Move = new_move(&-1, &0, &-1);

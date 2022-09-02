@@ -17,52 +17,52 @@ pub struct Node {
     pub value: u64
 }
 
-pub fn neighbour_high(b:&Board, n:&Neighbours) -> f64{
-    let wh1 = i32::pow(10, b.blocks[b.workers[0] as usize] as u32) as f64;
-    let wh2 = i32::pow(10, b.blocks[b.workers[1] as usize] as u32) as f64;
-    let wh3 = i32::pow(10, b.blocks[b.workers[2] as usize] as u32) as f64;
-    let wh4 = i32::pow(10, b.blocks[b.workers[3] as usize] as u32) as f64;
+pub fn neighbour_high(b:&Board, n:&Neighbours, p:[i32;3]) -> i32{
+    let wh1 = p[0] * i32::pow(p[1], b.blocks[b.workers[0] as usize] as u32);
+    let wh2 = p[0] * i32::pow(p[1], b.blocks[b.workers[1] as usize] as u32);
+    let wh3 = p[0] * i32::pow(p[1], b.blocks[b.workers[2] as usize] as u32);
+    let wh4 = p[0] * i32::pow(p[1], b.blocks[b.workers[3] as usize] as u32);
 
-    let wn1 = n.neighbours[b.workers[0]as usize].len() as f64;
-    let wn2 = n.neighbours[b.workers[1]as usize].len() as f64;
-    let wn3 = n.neighbours[b.workers[2]as usize].len() as f64;
-    let wn4 = n.neighbours[b.workers[3]as usize].len() as f64;
+    let wn1 = p[2] * n.neighbours[b.workers[0]as usize].len() as i32;
+    let wn2 = p[2] * n.neighbours[b.workers[1]as usize].len() as i32;
+    let wn3 = p[2] * n.neighbours[b.workers[2]as usize].len() as i32;
+    let wn4 = p[2] * n.neighbours[b.workers[3]as usize].len() as i32;
 
     let p1 = wh1 + wh2 + wn1 +wn2;
     let p2 = wh3 + wh4 + wn3 + wn4;
     return p1 - p2;
 }
-pub fn game_is_over(b: &Board) -> f64{
+pub fn game_is_over(b: &Board) -> i32{
     if b.blocks[b.workers[0] as usize] == 3|| b.blocks[b.workers[1] as usize] == 3{
-        return 10000.0;
+        return 10000;
     }
     if b.blocks[b.workers[2] as usize] == 3|| b.blocks[b.workers[3] as usize] == 3{
-        return -10000.0;
+        return -10000;
     }
-    return 0.0;
+    return 0;
 }
-pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64) -> f64{
-    let game_over:f64 = game_is_over(&b);
-    if game_over != 0.0{
+pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval: fn(&Board, &Neighbours) -> i32) -> i32{
+    let game_over:i32 = game_is_over(&b);
+    if game_over != 0{
         let db;
-        if game_over > 0.0{
+        if game_over > 0{
             db = depth;
         }
         else{
             db = -depth;
         }
-        return ((game_over + db as f64) as f64) * color as f64;
+        return (game_over + db) * color ;
     }
 
     if depth == 0{
-        return eval(&b, n) * color as f64;
+        return eval(&b, n) * color;
     }
 
-    let mut value:f64 = -10000.0;
-    let mut result:f64;
+    let mut value:i32 = -10000;
+    let mut result:i32;
     let moves:Vec<Move> = gen_all_moves(b, &color, n);
     if moves.len() == 0{
-        return (10000.0 + depth as f64) * -color as f64;
+        return (10000 + depth) * -color;
     }
     for mv in moves{
         make_move(&mv, &mut b);
@@ -74,27 +74,27 @@ pub fn negamax(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&
     }
     return value;
 }
-pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(board:&Board, nei:&Neighbours) -> f64, mut alpha:f64, mut beta:f64) -> f64{
-    let game_over:f64 = game_is_over(&b);
-    if game_over != 0.0{
+pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval: fn(&Board, &Neighbours) -> i32, mut alpha:i32, mut beta:i32) -> i32{
+    let game_over:i32 = game_is_over(&b);
+    if game_over != 0{
         let db;
-        if game_over > 0.0{
+        if game_over > 0{
             db = depth;
         }
         else{
             db = -depth;
         }
-        return ((game_over + db as f64) as f64) * color as f64;
+        return ((game_over + db as i32) as i32) * color as i32;
     }
 
     if depth == 0{
-        return eval(&b, n) * color as f64;
+        return eval(&b, n) * color as i32;
     }
-    let mut value:f64 = -10000.0;
-    let mut result:f64;
+    let mut value:i32 = -10000;
+    let mut result:i32;
     let moves:Vec<Move> = gen_all_moves(b, &color, n);
     if moves.len() == 0{
-        return (10000.0 + depth as f64) * -color as f64;
+        return (10000 + depth as i32) * -color as i32;
     }
     for mv in moves{
         make_move(&mv, &mut b);
@@ -113,9 +113,15 @@ pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval:fn(boar
     return value;
 }
 
+pub fn nhs(b:&Board, n:&Neighbours) -> i32{
+    return neighbour_high(b, n, [6, 2, 1]);
+}
+pub fn nhc(b:&Board, n:&Neighbours) -> i32{
+    return neighbour_high(b, n, [4, 3, 3]);
+}
 pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_s:&str, time_s:&str, remaining_time:Duration) -> Move {
     let now = Instant::now();
-    let mut eval:fn(&Board, &Neighbours) -> f64 = neighbour_high;
+    let mut eval:fn(&Board, &Neighbours) -> i32 = nhs;
     let mut time:Duration = Duration::new(1,0);
     let mut n_moves;
     let mut c_moves;
@@ -126,7 +132,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     };
     let mut depth:i32 = 1;
     match eval_s {
-        "nh" => eval = neighbour_high,
+        "nhs" => eval = nhs,
+        "nhc" => eval = nhc,
         _ => {}
     }
 
@@ -141,7 +148,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
         }
         let mvs:Vec<Move> = gen_all_moves(b, &color, n);
         n_moves = mvs.len();
-        let mut scores:Vec<f64> = vec!();
+        let mut scores:Vec<i32> = vec!();
         c_moves = 0;
       
         for mv in &mvs{
@@ -151,14 +158,14 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
             make_move(mv, &mut b);
             match search_s {
-                "negamax" => scores.push(-negamax(b, depth -1, -color, n, eval)),
-                "alpha_beta" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -10000.0 as f64, 10000.0 as f64)),
+                "negamax" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
+                "alpha_beta" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
                 _ => {}
             }
             undo_move(mv, &mut b);
         }
 
-        let mut best_score:f64 = scores[0];
+        let mut best_score:i32 = scores[0];
         let mut best_score_id:usize = 0;
         for (i, score) in scores.iter().enumerate(){
             if *score > best_score{
@@ -167,7 +174,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
-        println!("Depth {} {}/{}. Total time: {:.2?}. Score: {} Best move:", depth, c_moves, n_moves, now.elapsed(), best_score * color as f64);
+        println!("Depth {} {}/{}. Total time: {:.2?}. Score: {} Best move:", depth, c_moves, n_moves, now.elapsed(), best_score * color);
         print_move(&best);
         depth += 1;
     }
