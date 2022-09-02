@@ -84,17 +84,17 @@ pub fn alpha_beta(mut b:Board, depth:i32, color:i32, n:&Neighbours, eval: fn(&Bo
         else{
             db = -depth;
         }
-        return ((game_over + db as i32) as i32) * color as i32;
+        return (game_over + db) * color;
     }
 
     if depth == 0{
-        return eval(&b, n) * color as i32;
+        return eval(&b, n) * color
     }
     let mut value:i32 = -10000;
     let mut result:i32;
     let moves:Vec<Move> = gen_all_moves(b, &color, n);
     if moves.len() == 0{
-        return (10000 + depth as i32) * -color as i32;
+        return (10000 + depth) * -color
     }
     for mv in moves{
         make_move(&mv, &mut b);
@@ -125,6 +125,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     let mut time:Duration = Duration::new(1,0);
     let mut n_moves;
     let mut c_moves;
+    let mut max_score:i32 = 0;
     let mut best:Move = Move {
         from: 0,
         to: 0,
@@ -132,8 +133,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
     };
     let mut depth:i32 = 1;
     match eval_s {
-        "nhs" => eval = nhs,
-        "nhc" => eval = nhc,
+        "nhs" => {eval = nhs; max_score = 46},
+        "nhc" => {eval = nhc; max_score = 92}
         _ => {}
     }
 
@@ -177,7 +178,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
-        println!("Depth {} ({}). Total time: {:.2?}. Score: {} Best move:", depth, n_moves, now.elapsed(), best_score * color);
+        println!("Depth {} ({}). Total time: {:.2?}. Score: {:.2} Best move:", depth, n_moves, now.elapsed(), (best_score * color) as f64 / max_score as f64);
         print_move(&best);
         depth += 1;
     }
