@@ -165,6 +165,9 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             undo_move(mv, &mut b);
         }
 
+        if now.elapsed() > time{
+            break;
+        }
         let mut best_score:i32 = scores[0];
         let mut best_score_id:usize = 0;
         for (i, score) in scores.iter().enumerate(){
@@ -174,7 +177,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
-        println!("Depth {} {}/{}. Total time: {:.2?}. Score: {} Best move:", depth, c_moves, n_moves, now.elapsed(), best_score * color);
+        println!("Depth {} ({}). Total time: {:.2?}. Score: {} Best move:", depth, n_moves, now.elapsed(), best_score * color);
         print_move(&best);
         depth += 1;
     }

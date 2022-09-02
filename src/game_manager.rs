@@ -32,17 +32,17 @@ pub fn play_game(){
     let n:&Neighbours = &init_neighbours();
     let mut best:Move = new_move(&-1, &0, &-1);
     let mut color:i32 = 1;
-    let mut time_a = Duration::new(5 * 60, 0);
-    let mut time_b = Duration::new(5 * 60, 0);
+    let mut time_a = Duration::new(30 * 60, 0);
+    let mut time_b = Duration::new(30 * 60, 0);
     let mut now = Instant::now();
     let mut zero = Duration::new(0, 0);
     loop{
         now = Instant::now();
         if color == 1 {
-            best = get_best_move(b1, 1, n, "negamax", "nh", "standart", time_a);
+            best = get_best_move(b1, 1, n, "negamax", "nhs", "standart", time_a);
             time_a -= now.elapsed();
         } else {
-            best = get_best_move(b1, -1, n, "alpha_beta", "nh", "standart",  time_b);
+            best = get_best_move(b1, -1, n, "alpha_beta", "nhc", "standart",  time_b);
             time_b -= now.elapsed();
         }
         color *= -1;
