@@ -48,9 +48,9 @@ pub fn play_game(name_a:&str, name_b:&str){
         _ => {}
     }
     match name_b {
-        "Hero" => {search[1] = "mbv-1"; eval[1] = "mnhs-1"; time[1] = "ets-1"},
-        "Lumberjack" => {search[1] = "mvb-1"; eval[1] = "mnhs-1"; time[1] = "ets-1"},
-        "Conqueror" => {search[1] = "mvb-1"; eval[1] = "mnhc-1"; time[1] = "ets-1"},
+        "Hero" => {search[1] = "mbv-0"; eval[1] = "mnhs-0"; time[1] = "ets-0"},
+        "Lumberjack" => {search[1] = "mvb-1"; eval[1] = "mnhs-0"; time[1] = "ets-0"},
+        "Conqueror" => {search[1] = "mvb-1"; eval[1] = "mnhc-0"; time[1] = "ets-0"},
         _ => {}
     }
 
