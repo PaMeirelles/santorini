@@ -27,8 +27,8 @@ pub fn update_counter(){
     fs::write("data/counter.dat", counter.to_string()).expect("Unable to write file");
 }
 
-pub fn play_game(){
-    let mut b1:Board = new_board([12, 13, 7, 17]);
+pub fn play_game(name_a:&str, name_b:&str){
+    let mut b1:Board = new_board([10, 12, 8, 18]);
     let n:&Neighbours = &init_neighbours();
     let mut best:Move = new_move(&-1, &0, &-1);
     let mut color:i32 = 1;
@@ -36,13 +36,31 @@ pub fn play_game(){
     let mut time_b = Duration::new(15 * 60, 0);
     let mut now = Instant::now();
     let mut zero = Duration::new(0, 0);
+
+    let mut search:[&str;2] = ["", ""];
+    let mut eval:[&str;2] = ["", ""];
+    let mut time:[&str;2] = ["", ""];
+
+    match name_a {
+        "Hero" => {search[0] = "mbv-0"; eval[0] = "mnhs-0"; time[0] = "ets-0"},
+        "Lumberjack" => {search[0] = "mvb-1"; eval[0] = "mnhs-0"; time[0] = "ets-0"},
+        "Conqueror" => {search[0] = "mvb-1"; eval[0] = "mnhc-0"; time[0] = "ets-0"},
+        _ => {}
+    }
+    match name_b {
+        "Hero" => {search[1] = "mbv-1"; eval[1] = "mnhs-1"; time[1] = "ets-1"},
+        "Lumberjack" => {search[1] = "mvb-1"; eval[1] = "mnhs-1"; time[1] = "ets-1"},
+        "Conqueror" => {search[1] = "mvb-1"; eval[1] = "mnhc-1"; time[1] = "ets-1"},
+        _ => {}
+    }
+
     loop{
         now = Instant::now();
         if color == 1 {
-            best = get_best_move(b1, 1, n, "negamax", "nhs", "standart", time_a);
+            best = get_best_move(b1, 1, n, search[0], eval[0], time[0], time_a);
             time_a -= now.elapsed();
         } else {
-            best = get_best_move(b1, -1, n, "alpha_beta", "nhc", "standart",  time_b);
+            best = get_best_move(b1, -1, n, search[1], eval[1], time[1],  time_b);
             time_b -= now.elapsed();
         }
         color *= -1;

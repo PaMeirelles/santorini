@@ -131,15 +131,16 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
         to: 0,
         build: 0
     };
+
     let mut depth:i32 = 1;
     match eval_s {
-        "nhs" => {eval = nhs; max_score = 46},
-        "nhc" => {eval = nhc; max_score = 92}
+        "mnhs-0" => {eval = nhs; max_score = 46},
+        "mnhc-0" => {eval = nhc; max_score = 92}
         _ => {}
     }
 
     match time_s {
-        "standart" => {time = remaining_time / 15},
+        "ets-0" => {time = remaining_time / 15},
         _ => {}
     }
 
@@ -159,8 +160,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
             make_move(mv, &mut b);
             match search_s {
-                "negamax" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
-                "alpha_beta" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
+                "mvb-0" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
+                "mvb-1" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
                 _ => {}
             }
             undo_move(mv, &mut b);

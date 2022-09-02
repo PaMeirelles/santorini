@@ -16,7 +16,7 @@ fn main() {
     use std::time::Instant;
     let now = Instant::now();
     {
-        play_game();
+        play_game("Lumberjack", "Conqueror");
     }
 
     let elapsed = now.elapsed();
