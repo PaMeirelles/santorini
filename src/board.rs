@@ -68,21 +68,28 @@ pub fn get_square(id:&i32) -> String {
     str.push(numbers[x as usize]);
     return str;
 }
-pub fn print_move(mv:&Move){
+
+pub fn move_to_string(mv:&Move) -> String {
+    let mut s:String = "".to_string();
     if mv.build >= 0{
-        println!("{}({}) -> {}({}) [{}({})]", &mv.from, get_square(&mv.from), &mv.to,
+        s = format!("{}({}) -> {}({}) [{}({})]", &mv.from, get_square(&mv.from), &mv.to,
                  get_square(&mv.to), &mv.build, get_square(&mv.build));
     }
     else{
         if mv.build == -1{
-            println!("{}({}) -> {}({}) NOT SET", &mv.from, get_square(&mv.from), &mv.to,
+            s = format!("{}({}) -> {}({}) NOT SET", &mv.from, get_square(&mv.from), &mv.to,
                      get_square(&mv.to));
         }
         else if mv.build == -2{
-            println!("{}({}) -> {}({}) WON", &mv.from, get_square(&mv.from), &mv.to,
+            s =  format!("{}({}) -> {}({}) WON", &mv.from, get_square(&mv.from), &mv.to,
                      get_square(&mv.to));
         }
     }
+    return s;
+}
+
+pub fn print_move(mv:&Move){
+    println!("{}", move_to_string(mv));
 }
 
 pub fn make_move(mv:&Move, mut board: &mut Board){
