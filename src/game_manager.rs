@@ -1,4 +1,4 @@
-use crate::board::{Board, Move, new_board, new_move};
+use crate::board::{Board, Move, move_to_string, new_board, new_move};
 use crate::rules::{Neighbours, init_neighbours};
 use crate::engine::{get_best_move, Node};
 use crate::{gen_all_moves, make_move, print_board, print_move};
@@ -26,6 +26,19 @@ pub fn update_counter(){
     counter += 1;
     fs::write("data/counter.dat", counter.to_string()).expect("Unable to write file");
 }
+
+pub fn write_moves(mvs:Vec<Move>, id:i32){
+    let mut s:&String = &format!("data/matches/{}.dat", id);
+    let file = &File::create(s);
+    for mv in &mvs{
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .append(true) // This is needed to append to file
+            .open(s)
+            .unwrap();
+        write!(file, "{}\n", move_to_string(mv)).expect("Unable to write file");
+    }
+   }
 
 pub fn play_game(name_a:&str, name_b:&str){
     let mut b1:Board = new_board([10, 12, 8, 18]);
