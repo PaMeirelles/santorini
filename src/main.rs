@@ -14,7 +14,7 @@ fn main() {
     use std::time::Instant;
     let now = Instant::now();
     {
-        play_match("Lumberjack", "Conqueror", 1 * 60, 1);
+        play_match("Hero", "Lumberjack", 1 * 60, 2);
     }
 
     let elapsed = now.elapsed();
