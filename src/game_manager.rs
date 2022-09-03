@@ -40,6 +40,14 @@ pub fn write_moves(mvs:Vec<Move>, id:i32){
     }
    }
 
+pub fn break_start_pos(start_pos:i32) -> [i32;4]{
+    return [start_pos % 25, (start_pos / 25) % 25, (start_pos / 625) % 25, (start_pos / 15625) % 25];
+}
+
+pub fn assembly_start_pos(start_pos:[i32;4]) -> i32{
+    return start_pos[0] + start_pos[1] * 25 + start_pos[2] * 625 + start_pos[3] * 15625;
+}
+
 pub fn play_game(name_a:&str, name_b:&str){
     let mut b1:Board = new_board([10, 12, 8, 18]);
     let n:&Neighbours = &init_neighbours();
