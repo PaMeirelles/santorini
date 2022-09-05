@@ -69,15 +69,17 @@ pub fn play_game(name_a:&str, name_b:&str, starting_pos:i32, t:u64) -> bool{
     let mut time:[&str;2] = ["", ""];
     let mut moves = vec![];
     match name_a {
-        "Hero" => {search[0] = "mbv-0"; eval[0] = "mnhs-0"; time[0] = "ets-0"},
+        "Hero" => {search[0] = "mvb-0"; eval[0] = "mnhs-0"; time[0] = "ets-0"},
         "Lumberjack" => {search[0] = "mvb-1"; eval[0] = "mnhs-0"; time[0] = "ets-0"},
         "Conqueror" => {search[0] = "mvb-1"; eval[0] = "mnhc-0"; time[0] = "ets-0"},
+        "Sniper" => {search[0] = "mvb-0"; eval[0] = "mnhc-0"; time[0] = "ets-0"},
         _ => {}
     }
     match name_b {
-        "Hero" => {search[1] = "mbv-0"; eval[1] = "mnhs-0"; time[1] = "ets-0"},
+        "Hero" => {search[1] = "mvb-0"; eval[1] = "mnhs-0"; time[1] = "ets-0"},
         "Lumberjack" => {search[1] = "mvb-1"; eval[1] = "mnhs-0"; time[1] = "ets-0"},
         "Conqueror" => {search[1] = "mvb-1"; eval[1] = "mnhc-0"; time[1] = "ets-0"},
+        "Sniper" => {search[1] = "mvb-0"; eval[1] = "mnhc-0"; time[1] = "ets-0"}
         _ => {}
     }
 
@@ -85,17 +87,21 @@ pub fn play_game(name_a:&str, name_b:&str, starting_pos:i32, t:u64) -> bool{
         now = Instant::now();
         if color == 1 {
             best = get_best_move(b1, 1, n, search[0], eval[0], time[0], time_a);
-            time_a -= now.elapsed();
+            if now.elapsed() < time_a{
+                time_a -= now.elapsed();
+            }
         } else {
             best = get_best_move(b1, -1, n, search[1], eval[1], time[1],  time_b);
-            time_b -= now.elapsed();
+            if now.elapsed() < time_b{
+                time_b -= now.elapsed();
+            }
         }
         moves.push(best);
-        print_move(&best);
+        // print_move(&best);
         make_move(&best, &mut b1);
-        print_board(&b1);
-        println!("Time a: {:.2?} Time b: {:.2?}", time_a, time_b);
-        if time_a < zero || time_b < zero{
+        // print_board(&b1);
+        // println!("Time a: {:.2?} Time b: {:.2?}", time_a, time_b);
+        if time_a < now.elapsed() || time_b < now.elapsed(){
             if color == 1{
                 result = false;
             }
@@ -129,22 +135,26 @@ pub fn play_game(name_a:&str, name_b:&str, starting_pos:i32, t:u64) -> bool{
     register_game(get_counter(), name_a, name_b, starting_pos, result, time_string);
     write_moves(moves, get_counter());
     update_counter();
+    if result{
+        println!("{} 1 x 0 {}", name_a, name_b);
+    }
+    else{
+        println!("{} 0 x 1 {}", name_a, name_b);
+    }
     return result;
 }
 
-pub fn double_game(name_a:&str, name_b:&str, starting_pos:i32, t:u64) -> [i32;2]{
-    let mut results:[bool;2] = [true, true];
-    results[0] = play_game(name_a, name_b, starting_pos, t);
-    results[1] = play_game(name_a, name_b, invert_start_pos(starting_pos), t);
-    if results[0] && results[1]{
-        return [2, 0];
-    }
-    else if !results[0] && !results[1] {
-        return [0, 2];
-    }
-    else{
-        return [1, 1];
-    }
+pub fn complete_game(name_a:&str, name_b: &str, starting_pos:i32, t:u64) -> [i32;2]{
+    let mut results:[i32;4] = [0, 0, 0, 0];
+    results[0] = i32::from(play_game(name_a, name_b, starting_pos, t));
+    results[1] = i32::from(play_game(name_a, name_b, invert_start_pos(starting_pos), t));
+    results[2] = i32::from(play_game(name_b, name_a, starting_pos, t));
+    results[3] = i32::from(play_game(name_b, name_a, invert_start_pos(starting_pos), t));
+    let mut final_result:[i32;2] = [0, 0];
+    final_result[0] = 2 + results[0] + results[1] - results[2] - results[3];
+    final_result[1] = 2 - results[0] - results[1] + results[2] + results[3];
+
+    return final_result;
 }
 
 pub fn play_match(name_a:&str, name_b:&str, t:u64, n:i32){
@@ -154,10 +164,65 @@ pub fn play_match(name_a:&str, name_b:&str, t:u64, n:i32){
     let mut temp_result:[i32;2];
     while ng > 0{
         starting_pos = rand::thread_rng().gen_range(0..390624);
-        temp_result = double_game(name_a, name_b, starting_pos, t);
+        temp_result = complete_game(name_a, name_b, starting_pos, t);
         ng -= 1;
         results[0] += temp_result[0];
         results[1] += temp_result[1];
+        println!("{} x {}", results[0], results[1]);
     }
-    println!("{} x {}", results[0], results[1]);
+}
+
+pub fn get_pairings(players:&Vec<String>) -> Vec<(String, String)> {
+    let mut pairings = vec![];
+    for i in 0..players.len(){
+        for j in (i+1)..players.len(){
+            pairings.push((players[i].to_string(), players[j].to_string()));
+        }
+    }
+    return pairings;
+}
+
+pub fn get_1vall(players:&Vec<String>, star:&String) -> Vec<(String, String)> {
+    let mut pairings = vec![];
+    for i in 0..players.len() {
+        if players[i].to_string() != star{
+            pairings.push((star.to_string(), players[i].to_string()));
+        }
+    }
+    return pairings;
+}
+
+pub fn play_tournament(players:Vec<String>, t:u64, n:i32, mode:i32, star:String){
+    let pairings:Vec<(String,String)>;
+    if mode == 0{
+        pairings = get_pairings(&players);
+    }
+    else {
+        pairings = get_1vall(&players, &star);
+    }
+    let mut scores = vec![];
+    let mut starting_pos;
+    let mut temp;
+
+    for i in 0..(players.len()){
+        scores.push(0);
+    }
+    for round in 0..n{
+        starting_pos = rand::thread_rng().gen_range(0..390624);
+        for pairing in &pairings{
+            temp = complete_game(&*pairing.0, &*pairing.1, starting_pos, t);
+            for i in 0..players.len(){
+                if players[i] == pairing.0{
+                    scores[i] += temp[0];
+                }
+                if players[i] == pairing.1{
+                    scores[i] += temp[1];
+                }
+            }
+        }
+        println!("Round {}:", round);
+        for i in 0..players.len(){
+            println!("{}: {}", players[i], scores[i]);
+        }
+    }
 }

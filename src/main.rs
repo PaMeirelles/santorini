@@ -8,15 +8,9 @@ mod engine;
 
 mod game_manager;
 use crate::engine::{alpha_beta, neighbour_high, get_best_move, Node};
-use crate::game_manager::{play_game, get_counter, update_counter, register_game, write_moves, assembly_start_pos, break_start_pos, play_match};
+use crate::game_manager::{play_game, get_counter, update_counter, register_game, write_moves, assembly_start_pos, break_start_pos, play_match, get_pairings, play_tournament};
 
 fn main() {
-    use std::time::Instant;
-    let now = Instant::now();
-    {
-        play_match("Hero", "Lumberjack", 1 * 60, 2);
-    }
-
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    play_tournament(vec!["Hero".to_string(), "Lumberjack".to_string(), "Conqueror".to_string(), "Sniper".to_string()
+    ], 3 * 60, 8, 1, "Sniper".to_string());
 }

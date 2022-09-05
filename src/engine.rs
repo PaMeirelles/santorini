@@ -160,7 +160,7 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
             make_move(mv, &mut b);
             match search_s {
-                "mvb-0" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
+                "mvb-0" => scores.push(-negamax(b, depth -1, -color, n, eval)),
                 "mvb-1" => scores.push(-alpha_beta(b, depth -1, -color, n, eval, -100000, 100000)),
                 _ => {}
             }
@@ -179,8 +179,8 @@ pub fn get_best_move(mut b:Board, color:i32, n:&Neighbours, search_s:&str, eval_
             }
         }
         best = mvs[best_score_id];
-        println!("Depth {} ({}). Total time: {:.2?}. Score: {:.2} Best move:", depth, n_moves, now.elapsed(), (best_score * color) as f64 / max_score as f64);
-        print_move(&best);
+        // println!("Depth {} ({}). Total time: {:.2?}. Score: {:.2} Best move:", depth, n_moves, now.elapsed(), (best_score * color) as f64 / max_score as f64);
+        // print_move(&best);
         depth += 1;
     }
 
