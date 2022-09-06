@@ -185,7 +185,7 @@ pub fn get_pairings(players:&Vec<String>) -> Vec<(String, String)> {
 pub fn get_1vall(players:&Vec<String>, star:&String) -> Vec<(String, String)> {
     let mut pairings = vec![];
     for i in 0..players.len() {
-        if players[i].to_string() != star{
+        if players[i].to_string() != *star{
             pairings.push((star.to_string(), players[i].to_string()));
         }
     }

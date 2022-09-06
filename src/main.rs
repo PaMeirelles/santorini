@@ -12,5 +12,5 @@ use crate::game_manager::{play_game, get_counter, update_counter, register_game,
 
 fn main() {
     play_tournament(vec!["Hero".to_string(), "Lumberjack".to_string(), "Conqueror".to_string(), "Sniper".to_string()
-    ], 3 * 60, 8, 1, "Sniper".to_string());
+    ], 3 * 60, 32, 1, "Sniper".to_string());
 }
